@@ -118,9 +118,15 @@ namespace UnityWeld.Binding
             memberName = endPointReference.Substring(lastPeriodIndex + 1);
             //Due to (undocumented) unity behaviour, some of their components do not work with the namespace when using GetComponent(""), and all of them work without the namespace
             //So to be safe, we remove all namespaces from any component that starts with UnityEngine
+
+            
             if (typeName.StartsWith("UnityEngine."))
             {
-                typeName = typeName.Substring(typeName.LastIndexOf('.') + 1);
+                // In unity 2022.2.2 GetComponent(string) does not work with types from UnityEngine.UI without namespace
+                if (!typeName.StartsWith("UnityEngine.UI"))
+                {
+                    typeName = typeName.Substring(typeName.LastIndexOf('.') + 1);
+                }
             }
             if (typeName.Length == 0 || memberName.Length == 0)
             {
