@@ -61,10 +61,22 @@ namespace UnityWeld.Binding
             // Set the bound view to the new view model.
             this.viewModel = viewModel;
 
-            foreach (var binding in GetComponentsInChildren<AbstractMemberBinding>())
+            if (gameObject.activeInHierarchy) 
             {
-                binding.Init();
+                // GetComponentsInChildren doesn't do what you might expect in this case.
+                // https://forum.unity.com/threads/getcomComponentsinchildren-false-returns-inactive-objects.501177/
+
+                // Call GetComponentsInChildren and binding.Init() child objects only if the current game object is active in the hierarchy
+                // If you called Binding.Init on an inactive object and it never Awake during its lifecycle (OnDestroy will not be called)
+                // the binding will never be disconnected.
+
+                foreach (var binding in GetComponentsInChildren<AbstractMemberBinding>())
+                {
+                    binding.Init();
+                }
             }
+
+            
         }
     }
 } 
