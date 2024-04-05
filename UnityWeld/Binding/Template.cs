@@ -51,6 +51,27 @@ namespace UnityWeld.Binding
         /// </summary>
         private object viewModel;
 
+        private void OnEnable()
+        {
+            if (viewModel != null)
+            {
+                InitChildBindings(viewModel);
+            }
+        }
+
+        private void OnDisable()
+        {
+            if(viewModel != null)
+            {
+                DisconnectChildBindings();
+            }
+        }
+
+        private void OnDestroy()
+        {
+            viewModel = null;
+        }
+
         /// <summary>
         /// Set the view model and initialise all binding objects down the hierarchy.
         /// </summary>
@@ -75,8 +96,14 @@ namespace UnityWeld.Binding
                     binding.Init();
                 }
             }
+        }
 
-            
+        private void DisconnectChildBindings()
+        {
+            foreach (var binding in GetComponentsInChildren<AbstractMemberBinding>())
+            {
+                binding.Disconnect();
+            }
         }
     }
 } 
